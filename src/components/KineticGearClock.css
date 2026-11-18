@@ -1,0 +1,385 @@
+.kinetic-clock-module {
+  width: 100%;
+  margin: 1.5rem 0 2rem 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: clamp(2rem, 3.5vw, 3rem);
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-smooth), transform var(--transition-smooth);
+}
+
+.kinetic-clock-module:hover {
+  border-color: var(--accent-border);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.45), 0 0 35px rgba(255, 0, 110, 0.12);
+  transform: translateY(-2px);
+}
+
+.kinetic-clock-container {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 3.5rem;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Ambient Radial Glow behind the Gear Mechanism */
+.gears-ambient-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(255, 0, 110, 0.18) 0%, rgba(27, 38, 59, 0.05) 55%, transparent 75%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity var(--transition-smooth);
+}
+
+.kinetic-clock-module:hover .gears-ambient-glow {
+  opacity: 1;
+  background: radial-gradient(circle, rgba(255, 0, 110, 0.28) 0%, rgba(27, 38, 59, 0.08) 55%, transparent 75%);
+}
+
+/* Gears SVG Canvas */
+.kinetic-gears-assembly {
+  position: relative;
+  width: 320px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.kinetic-gears-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5));
+}
+
+/* Gear Styling */
+.gear-master-path {
+  fill: rgba(27, 38, 59, 0.85);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 8px rgba(255, 0, 110, 0.4));
+  transition: stroke var(--transition-fast), filter var(--transition-fast);
+}
+
+.gear-metal {
+  fill: rgba(20, 30, 48, 0.8);
+  stroke: rgba(168, 184, 204, 0.7);
+  stroke-width: 1.2;
+  transition: stroke var(--transition-fast);
+}
+
+.gear-neon {
+  fill: rgba(255, 0, 110, 0.12);
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 6px rgba(255, 0, 110, 0.5));
+}
+
+.gear-interior-large {
+  fill: rgba(13, 27, 42, 0.9);
+  stroke: rgba(119, 141, 169, 0.35);
+  stroke-width: 1;
+}
+
+.gear-interior {
+  fill: rgba(13, 27, 42, 0.85);
+  stroke: rgba(119, 141, 169, 0.3);
+  stroke-width: 1;
+}
+
+.spoke-window-large {
+  fill: rgba(13, 27, 42, 0.95);
+  stroke: rgba(255, 0, 110, 0.35);
+  stroke-width: 1;
+}
+
+.spoke-window {
+  fill: rgba(13, 27, 42, 0.9);
+  stroke: rgba(119, 141, 169, 0.3);
+  stroke-width: 0.8;
+}
+
+.gear-core-outer {
+  fill: var(--bg-secondary);
+  stroke: var(--accent);
+  stroke-width: 1.2;
+}
+
+.gear-core-center {
+  fill: rgba(255, 0, 110, 0.3);
+  stroke: #ffffff;
+  stroke-width: 1;
+}
+
+.gear-pivot {
+  fill: #a8b8cc;
+}
+
+.gear-pivot-accent {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 4px var(--accent));
+}
+
+.core-led-pulsing {
+  fill: #ffffff;
+  stroke: var(--accent);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 8px var(--accent));
+  animation: corePulse 2s infinite ease-in-out;
+}
+
+@keyframes corePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* 60 FPS Keyframe Rotations */
+@keyframes spinCW {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinCCW {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.gear-master {
+  animation: spinCW 24s linear infinite;
+  will-change: transform;
+}
+
+.gear-secondary {
+  animation: spinCCW 16s linear infinite;
+  will-change: transform;
+}
+
+.gear-escape {
+  animation: spinCW 6s linear infinite;
+  will-change: transform;
+}
+
+.gear-aux {
+  animation: spinCCW 14s linear infinite;
+  will-change: transform;
+}
+
+.gear-orbit-ring {
+  animation: spinCCW 60s linear infinite;
+  will-change: transform;
+}
+
+/* Mouse Hover Acceleration & Neon Intensification */
+.kinetic-clock-module.is-accelerated .gear-master {
+  animation-duration: 9s;
+}
+
+.kinetic-clock-module.is-accelerated .gear-secondary {
+  animation-duration: 6s;
+}
+
+.kinetic-clock-module.is-accelerated .gear-escape {
+  animation-duration: 2.2s;
+}
+
+.kinetic-clock-module.is-accelerated .gear-aux {
+  animation-duration: 5.5s;
+}
+
+.kinetic-clock-module.is-accelerated .gear-orbit-ring {
+  animation-duration: 24s;
+}
+
+.kinetic-clock-module.is-accelerated .gear-master-path {
+  stroke: #ff2a82;
+  filter: drop-shadow(0 0 14px rgba(255, 0, 110, 0.7));
+}
+
+.kinetic-clock-module.is-accelerated .gear-neon {
+  filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.8));
+}
+
+/* Digital Readout & Typographic Layout */
+.kinetic-clock-display {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.clock-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.85rem;
+}
+
+.clock-live-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: liveBlink 2s infinite ease-in-out;
+}
+
+@keyframes liveBlink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+.clock-digits-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: clamp(2.4rem, 5.2vw, 4.4rem);
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.clock-unit-hour,
+.clock-unit-minute {
+  color: #ffffff;
+}
+
+.clock-separator {
+  color: var(--text-muted);
+  opacity: 0.75;
+  animation: separatorBlink 1s infinite steps(2, start);
+}
+
+@keyframes separatorBlink {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.clock-unit-second {
+  color: var(--accent);
+  text-shadow: 0 0 18px rgba(255, 0, 110, 0.5);
+}
+
+.clock-zone-badge {
+  font-size: clamp(0.9rem, 1.8vw, 1.25rem);
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-left: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.clock-full-date {
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+.clock-meta-footer {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+}
+
+.meta-label {
+  color: var(--text-muted);
+}
+
+.meta-val {
+  color: var(--text-primary);
+}
+
+.highlight-neon {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .kinetic-clock-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .kinetic-gears-assembly {
+    margin: 0 auto;
+  }
+
+  .clock-eyebrow {
+    justify-content: center;
+  }
+
+  .clock-digits-row {
+    justify-content: center;
+  }
+
+  .clock-meta-footer {
+    justify-content: center;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .kinetic-gears-assembly {
+    width: 260px;
+    height: 230px;
+  }
+
+  .clock-meta-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
